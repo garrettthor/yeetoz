@@ -65,13 +65,13 @@ app.get('/burritos/:id/edit', async (req, res) => {
 
 app.put('/burritos/:id', async (req, res) => {
     const { id } = req.params;
-    const burrito = await Burrito.findByIdAndUpdate(id, { ...req.body.burrito });
+    const burrito = await Burrito.findByIdAndUpdate(id, { ...req.body.burrito }, { useFindAndModify: false });
     res.redirect(`${burrito._id}`);
 });
 
 app.delete('/burritos/:id', async (req, res) => {
     const { id } = req.params;
-    await Burrito.findByIdAndDelete(id);
+    await Burrito.findByIdAndDelete(id, { useFindAndModify: false });
     res.redirect('/burritos');
 });
 

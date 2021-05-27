@@ -3,7 +3,9 @@ const Schema = mongoose.Schema;
 
 const BurritoSchema = new Schema({
     title: String,
-    price: String,
+    image: String,
+    description: String,
+    price: Number,
     type: String,
     location: String,
     restaurant: String

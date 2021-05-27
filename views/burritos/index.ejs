@@ -1,10 +1,28 @@
+<% layout('layouts/boilerplate') %>
 
-    <h1>All Burritos</h1>
-    <div>
-        <a href="/burritos/new">New Burrito</a>
+<h1>Feed Me Burritos</h1>
+<div>
+    <a href="/burritos/new">New Burrito</a>
+</div>
+    <% for (let burrito of burritos) { %>
+    <div class="card mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <img class="img-fluid" alt="" src="<%= burrito.image %>">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title"><%= burrito.title %></h5>
+                    <p class="card-text"><%= burrito.description %></p>
+                    <p class="card-text">
+                        <small class="text-muted"><%= burrito.restaurant %></small>
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted"><%= burrito.location %></small>
+                    </p>
+                    <a class="btn btn-primary" href="/burritos/<%= burrito._id %>">View <%= burrito.title %></a>
+                </div>
+            </div>
+        </div>
     </div>
-    <ul>
-        <% for (let burrito of burritos) { %>
-        <li><a href="/burritos/<%= burrito._id %> "><%= burrito.title %></a></li>
-        <% } %> 
-    </ul>
+    <% } %> 
