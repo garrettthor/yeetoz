@@ -7,7 +7,6 @@ const BurritoSchema = new Schema({
     image: String,
     description: String,
     price: Number,
-    type: String,
     location: String,
     restaurant: String
 });
