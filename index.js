@@ -3,7 +3,8 @@ const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const Joi = require('joi');
-const { burritoValidateSchema } = require('./schemas.js')
+const { burritoValidateSchema } = require('./schemas.js');
+const { reviewValidateSchema } = require('./schemas.js')
 const catchAsync = require('./utilities/catchAsync');
 const ExpressError = require('./utilities/ExpressError');
 const methodOverride = require('method-override');
@@ -38,8 +39,20 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
+
+// Validation Errors
 const validateBurrito = (req, res, next) => {
     const { error } = burritoValidateSchema.validate(req.body);
+    if(error){
+        const msg = error.details.map(el => el.message).join(',');
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    };
+};
+
+const validateReview = (req, res, next) => {
+    const { error } = reviewValidateSchema.validate(req.body);
     if(error){
         const msg = error.details.map(el => el.message).join(',');
         throw new ExpressError(msg, 400);
@@ -73,7 +86,7 @@ app.post('/burritos', validateBurrito, catchAsync(async (req, res, next) => {
 }));
 
 app.get('/burritos/:id', catchAsync(async (req, res) => {
-    const burrito = await Burrito.findById(req.params.id);
+    const burrito = await Burrito.findById(req.params.id).populate('reviews');
     res.render('burritos/show', { burrito });
 }));
 
@@ -103,6 +116,17 @@ app.post('/burritos/:id/reviews', catchAsync(async(req, res) => {
     res.redirect(`/burritos/${burrito._id}`)
 }));
 
+app.delete('/burritos/:id/reviews/:reviewId', catchAsync(async(req, res) => {
+    const { id, reviewId } = req.params;
+    await Burrito.findByIdAndUpdate(id, {$pull: {reviews: reviewId } }, { useFindAndModify: false });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/burritos/${id}`);
+}));
+
+
+
+
+// Error Handling
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404))
 });
@@ -115,7 +139,7 @@ app.use((err, req, res, next) => {
 
 
 
-
+// Listen on PORT
 app.listen(PORT, () => {
     console.log(`Escuchando a PORT: ${PORT}.  Vámanos pues.`);
 });
