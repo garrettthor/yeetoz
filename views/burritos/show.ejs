@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show</title>
+</head>
+<body>
+    <h1><%= burrito.title %></h1>
+    <h2><%= burrito.location %></h2>
+    <h3><%= burrito.restaurant %></h3>
+
+    <p>
+        <a href="/burritos/<%= burrito._id %>/edit">Edit</a>
+    </p>
+
+    <p>
+        <form action="/burritos/<%= burrito._id %>?_method=DELETE" method="POST">
+            <button>DELETE that YEET</button>
+        </form>
+    </p>
+
+    <footer>
+        
+        <a href="/burritos">Back to Burritos</a>
+    </footer>
+</body>
+</html>

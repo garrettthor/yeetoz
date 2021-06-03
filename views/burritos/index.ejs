@@ -1,0 +1,10 @@
+
+    <h1>All Burritos</h1>
+    <div>
+        <a href="/burritos/new">New Burrito</a>
+    </div>
+    <ul>
+        <% for (let burrito of burritos) { %>
+        <li><a href="/burritos/<%= burrito._id %> "><%= burrito.title %></a></li>
+        <% } %> 
+    </ul>
