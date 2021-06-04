@@ -1,17 +1,19 @@
 const express = require('express');
 const path = require('path');
-const router = express.Router();
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
 const flash = require('connect-flash');
 const ExpressError = require('./utilities/ExpressError');
 const methodOverride = require('method-override');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user')
 
 const PORT = 1984;
 
 
-//  ALL THIS SHIT GOT MOVED INTO OTHER FILES WHERE THEY ARE APPLICABLE.  NO LONGER NEEDED HERE, just left them commented out to leave some breadcrumbs... nom nom nom
+//  ALL THIS STUFF GOT MOVED INTO OTHER FILES WHERE THEY ARE APPLICABLE.  NO LONGER NEEDED HERE, just left them commented out to leave some breadcrumbs... nom nom nom
 // const Joi = require('joi');
 // const { burritoValidateSchema } = require('./schemas.js');
 // const { reviewValidateSchema } = require('./schemas.js');
@@ -20,8 +22,9 @@ const PORT = 1984;
 // const Review = require('./models/review');
 
 // Requiring the route files
-const burritos = require('./routes/burritos');
-const reviews = require('./routes/reviews');
+const burritosRoutes = require('./routes/burritos');
+const reviewsRoutes = require('./routes/reviews');
+const userRoutes = require('./routes/users')
 
 // Connection to the local database through mongoose.
 mongoose.connect('mongodb://localhost:27017/yeetoz', {
@@ -52,6 +55,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret!',
     resave: false,
@@ -63,8 +67,17 @@ const sessionConfig = {
         maxAge: (1000*60*60*24*7)
     }
 }
+
+// This app dot use session MUST COME BEFORE passport dot session below.
 app.use(session(sessionConfig));
 app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // These have also been moved to other files where they are applicable.  Leaving here to just show the wayyy
 
@@ -90,17 +103,27 @@ app.use(flash());
 // };
 
 app.use((req, res, next) => {
+    console.log(req.session)
+    res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
 });
 
 // This sets the routes to the above referenced variables.  It's best to place 'burritos' here, and '/' in the route files so you could make drastic changes HERE, and only once.  As opposed to, say, changing every instance of /burritos/ elsewhere.  :)
-app.use('/burritos', burritos);
-app.use('/burritos/:id/reviews', reviews);
+app.use('/burritos', burritosRoutes);
+app.use('/burritos/:id/reviews', reviewsRoutes);
+app.use('/', userRoutes);
 
 // ROUTES
-router.get('/', (req, res) => {
+app.get('/fakeUser', async (req, res) => {
+    const user = new User({email: 'test@gmail.com', username: 'test'});
+    //The below registers the user in arg1 and the password in arg2
+    const newUser = await User.register(user, 'abc123');
+    res.send(newUser)
+});
+
+app.get('/', (req, res) => {
     res.render('home');
 });
 

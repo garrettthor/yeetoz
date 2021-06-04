@@ -24,6 +24,7 @@ const seedDB = async () => {
         const random1000 = Math.floor(Math.random() * 1000);
         const price = Math.floor(Math.random() * 10);
         const burro = new Burrito({
+            author: '60cb8cf2e99f2113369b08af',
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(types)} burrito.`,
             restaurant: `${sample(restaurants)}`,

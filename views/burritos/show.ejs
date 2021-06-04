@@ -10,14 +10,17 @@
             </div>
             <ul class="list-group list-group-flush">
               <li class="list-group-item"><%= burrito.restaurant %> - <span class="text-muted"><%= burrito.location %></span></li>
+              <li class="list-group-item">Submitted by <%= burrito.author.username %></li>
               <li class="list-group-item">$<%= burrito.price %></li>
             </ul>
+            <% if (currentUser && burrito.author.equals(currentUser._id)) { %> 
             <div class="card-body">
-              <a href="/burritos/<%= burrito._id %>/edit" class="card-link btn btn-info">Edit</a>
-              <form class="d-inline card-link" action="/burritos/<%= burrito._id %>?_method=DELETE" method="POST">
-                <button class="btn btn-danger">YEET that burrito</button>
-            </form>
+                <a href="/burritos/<%= burrito._id %>/edit" class="card-link btn btn-info">Edit</a>
+                <form class="d-inline card-link" action="/burritos/<%= burrito._id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">YEET that burrito</button>
+                </form>
             </div>
+            <% } %> 
             <div class="card-footer text-muted">
                 <a href="/burritos">Back to Burritos</a>
             </div>

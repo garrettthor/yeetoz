@@ -6,7 +6,15 @@
 
     <a href="/burritos"><h2>Tell me all about that 🌯</h2></a>
 
-    <h3>Log in</h3>
-    <h3>Sign up</h3>
+    <% if(!currentUser) { %>
+        <div>
+            <a href="/login">Login</a>
+        </div>
+        <div>
+            <a href="/register">Register</a>
+        </div>
+        <% } else { %>
+        <a href="/logout">Logout, <%= currentUser.username %> </a>
+        <% } %> 
     
 </body>
