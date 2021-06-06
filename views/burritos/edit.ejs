@@ -7,38 +7,56 @@
 <div class="row">
     <h1 class="text-center">Edit Burrito</h1>
     <div class="col-6 offset-3">
-        <form action="/burritos/<%=burrito._id%>?_method=PUT" method="POST">
+        <form class="validated-form" action="/burritos/<%=burrito._id%>?_method=PUT" method="POST" novalidate>
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
-                <input class="form-control" type="text" id="title" name="burrito[title]" value="<%= burrito.title %>"">
+                <input class="form-control" type="text" id="title" name="burrito[title]" value="<%= burrito.title %>"" required>
+                <div class="valid-feedback">
+                    Heard!
+                  </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="restaurant">Restaurant</label>
-                <input class="form-control" type="text" id="restaurant" name="burrito[restaurant]" value="<%= burrito.restaurant %>">
+                <input class="form-control" type="text" id="restaurant" name="burrito[restaurant]" value="<%= burrito.restaurant %>" required>
+                <div class="valid-feedback">
+                    Heard!
+                  </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="location">Location</label>
-                <input class="form-control" type="text" id="location" name="burrito[location]" value="<%= burrito.location %>">
+                <input class="form-control" type="text" id="location" name="burrito[location]" value="<%= burrito.location %>" required>
+                <div class="valid-feedback">
+                    Heard!
+                  </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="price">Burrito Price</label>
                 <div class="input-group">
                     <span class="input-group-text" id="price-label">$</span>
-                    <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price" aria-describedby="" name="burrito[price]" value="<%= burrito.price %>">
+                    <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price" aria-describedby="" name="burrito[price]" value="<%= burrito.price %>" required>
+                    <div class="valid-feedback">
+                        Heard!
+                      </div>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="image">Image URL</label>
-                <input class="form-control" type="text" id="image" name="burrito[image]" value="<%= burrito.image %>">
+                <input class="form-control" type="text" id="image" name="burrito[image]" value="<%= burrito.image %>" required>
+                <div class="valid-feedback">
+                    Heard!
+                  </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="description">Description</label>
-                <textarea class="form-control" type="text" id="description" name="burrito[description]"><%= burrito.description %> </textarea>
+                <textarea class="form-control" type="text" id="description" name="burrito[description]" required><%= burrito.description %> </textarea>
+                <div class="valid-feedback">
+                    Heard!
+                  </div>
             </div>
 
             <div class="mb-3">
