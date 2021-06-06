@@ -1,31 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utilities/catchAsync');
-const ExpressError = require('../utilities/ExpressError');
 const Burrito = require('../models/burrito');
-const { burritoValidateSchema, reviewValidateSchema } = require('../schemas.js');
-const { isLoggedIn } = require('../middleware')
 
-// Validation Errors
-const validateBurrito = (req, res, next) => {
-    const { error } = burritoValidateSchema.validate(req.body);
-    if(error){
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    };
-};
-
-const isAuthor = async(req, res, next) => {
-    const { id } = req.params;
-    const burrito = await Burrito.findById(id);
-    if (!burrito.author.equals(req.user._id)) {
-        req.flash('error', 'You do not have permission to do that!');
-        return res.redirect(`/burritos/${id}`)
-    }
-    next();
-};
+const { isLoggedIn, isAuthor, validateBurrito } = require('../middleware')
 
 // Routes
 router.get('/', catchAsync(async (req, res) => {
@@ -49,9 +27,14 @@ router.post('/', isLoggedIn, validateBurrito, catchAsync(async (req, res, next) 
     res.redirect(`burritos/${burrito._id}`);
 }));
 
-router.get('/:id', isLoggedIn, catchAsync(async (req, res) => {
-    const burrito = await (await Burrito.findById(req.params.id).populate('reviews').populate('author'));
-    //console.log(burrito); 
+router.get('/:id', catchAsync(async (req, res) => {
+    const burrito = await (await Burrito.findById(req.params.id).populate({
+        path:'reviews',
+        populate: {
+            path: 'author'
+        }
+    }).populate('author'));
+    console.log(burrito); 
     if(!burrito){
         req.flash('error', 'Burrito doesn\'t exist...');
         return res.redirect('/burritos');
@@ -66,20 +49,17 @@ router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
         req.flash('error', 'Cannot find that burrito');
         return res.redirect('/burritos');
     }
-
-
-    // const burrito = await Burrito.findById(req.params.id);
     res.render('burritos/edit', { burrito });
 }));
 
-router.put('/:id', isLoggedIn, validateBurrito, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, isAuthor, validateBurrito, catchAsync(async (req, res) => {
     const { id } = req.params;
     const burrito = await Burrito.findByIdAndUpdate(id, { ...req.body.burrito }, { useFindAndModify: false });
     req.flash('success', 'Successfully updated burrito!')
     res.redirect(`${burrito._id}`);
 }));
 
-router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     const { id } = req.params;
     await Burrito.findByIdAndDelete(id, { useFindAndModify: false });
     req.flash('success', 'Successfully YEETed the burrito!  Get outa here!');
