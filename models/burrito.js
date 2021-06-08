@@ -8,7 +8,13 @@ const BurritoSchema = new Schema({
     description: String,
     price: Number,
     location: String,
-    restaurant: String
+    restaurant: String,
+    reviews: [
+        {
+            type: Schema.Types.ObjectId,
+        ref: 'Review'
+        } 
+    ]
 });
 
 module.exports = mongoose.model('Burrito', BurritoSchema);
