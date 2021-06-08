@@ -8,6 +8,7 @@ const catchAsync = require('./utilities/catchAsync');
 const ExpressError = require('./utilities/ExpressError');
 const methodOverride = require('method-override');
 const Burrito = require('./models/burrito');
+const Review = require('./models/review');
 const PORT = 1984;
 
 // Connection to the local database through mongoose.
@@ -18,7 +19,7 @@ mongoose.connect('mongodb://localhost:27017/yeetoz', {
 });
 
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'Error de connecion:'));
+db.on('error', console.error.bind(console, 'Error de conexión:'));
 db.once('open', () => {
     console.log(`Hola, estamos conectados a ${db.name}.`);
 });
@@ -91,6 +92,15 @@ app.delete('/burritos/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     await Burrito.findByIdAndDelete(id, { useFindAndModify: false });
     res.redirect('/burritos');
+}));
+
+app.post('/burritos/:id/reviews', catchAsync(async(req, res) => {
+    const burrito = await Burrito.findById(req.params.id);
+    const review = new Review(req.body.review);
+    burrito.reviews.push(review);
+    await review.save();
+    await burrito.save();
+    res.redirect(`/burritos/${burrito._id}`)
 }));
 
 app.all('*', (req, res, next) => {
