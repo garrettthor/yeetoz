@@ -69,6 +69,8 @@ app.get('/', (req, res) => {
 
 app.get('/burritos', catchAsync(async (req, res) => {
     const burritos = await Burrito.find({});
+    // const sortedList = burritos.sort((a,b) => a.price-b.price)
+    // console.log(sortedList)
     res.render('burritos/index', { burritos });
 }));
 
