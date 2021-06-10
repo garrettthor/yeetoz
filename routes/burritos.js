@@ -1,69 +1,23 @@
 const express = require('express');
 const router = express.Router();
+const burritos = require('../controllers/burritos')
 const catchAsync = require('../utilities/catchAsync');
-const Burrito = require('../models/burrito');
-
+// Load middleware
 const { isLoggedIn, isAuthor, validateBurrito } = require('../middleware')
 
 // Routes
-router.get('/', catchAsync(async (req, res) => {
-    const burritos = await Burrito.find({});
-    // const sortedList = burritos.sort((a,b) => a.price-b.price)
-    // console.log(sortedList)
-    res.render('burritos/index', { burritos });
-}));
+router.get('/', catchAsync(burritos.index));
 
-router.get('/new', isLoggedIn, (req, res) => {
-    res.render('burritos/new');
-});
+router.get('/new', isLoggedIn, burritos.renderNewForm);
 
-router.post('/', isLoggedIn, validateBurrito, catchAsync(async (req, res, next) => {
-    // Rudimentary logic to detect if the body contains burrito at all
-    // if(!req.body.burrito) throw new ExpressError('Invalid Burrito Data', 400);
-    const burrito = new Burrito(req.body.burrito);
-    burrito.author = req.user._id;
-    await burrito.save();
-    req.flash('success', 'Successfully made a new burrito!');
-    res.redirect(`burritos/${burrito._id}`);
-}));
+router.post('/', isLoggedIn, validateBurrito, catchAsync(burritos.createBurrito));
 
-router.get('/:id', catchAsync(async (req, res) => {
-    const burrito = await (await Burrito.findById(req.params.id).populate({
-        path:'reviews',
-        populate: {
-            path: 'author'
-        }
-    }).populate('author'));
-    console.log(burrito); 
-    if(!burrito){
-        req.flash('error', 'Burrito doesn\'t exist...');
-        return res.redirect('/burritos');
-    }
-    res.render('burritos/show', { burrito });
-}));
+router.get('/:id', catchAsync(burritos.showBurrito));
 
-router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const burrito = await Burrito.findById(id);
-    if (!burrito) {
-        req.flash('error', 'Cannot find that burrito');
-        return res.redirect('/burritos');
-    }
-    res.render('burritos/edit', { burrito });
-}));
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(burritos.renderEditForm));
 
-router.put('/:id', isLoggedIn, isAuthor, validateBurrito, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const burrito = await Burrito.findByIdAndUpdate(id, { ...req.body.burrito }, { useFindAndModify: false });
-    req.flash('success', 'Successfully updated burrito!')
-    res.redirect(`${burrito._id}`);
-}));
+router.put('/:id', isLoggedIn, isAuthor, validateBurrito, catchAsync(burritos.updateBurrito));
 
-router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await Burrito.findByIdAndDelete(id, { useFindAndModify: false });
-    req.flash('success', 'Successfully YEETed the burrito!  Get outa here!');
-    res.redirect('/burritos');
-}));
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(burritos.deleteBurrito));
 
 module.exports = router;
