@@ -3,7 +3,7 @@
 <div class="row">
     <h1 class="text-center">New Burrito</h1>
     <div class="col-6 offset-3">
-        <form class="validated-form" action="/burritos" method="POST" novalidate>
+        <form class="validated-form" action="/burritos" method="POST" novalidate enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="burrito[title]" required>
@@ -13,6 +13,10 @@
                 <div class="invalid-feedback">
                     Required!
                 </div>
+            </div>
+
+            <div>
+                <input type="file" name="image" id="">
             </div>
             
 
