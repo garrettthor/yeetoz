@@ -5,7 +5,12 @@ const Schema = mongoose.Schema;
 const BurritoSchema = new Schema({
     title: String,
     date: Date,
-    image: String,
+    images: [
+        {
+            url: String,
+            filename: String
+        }
+    ],
     description: String,
     price: Number,
     location: String,
@@ -17,7 +22,7 @@ const BurritoSchema = new Schema({
     reviews: [
         {
             type: Schema.Types.ObjectId,
-        ref: 'Review'
+            ref: 'Review'
         } 
     ]
 });

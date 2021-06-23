@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+};
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -10,16 +14,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user')
 
-const PORT = 1984;
-
-
-//  ALL THIS STUFF GOT MOVED INTO OTHER FILES WHERE THEY ARE APPLICABLE.  NO LONGER NEEDED HERE, just left them commented out to leave some breadcrumbs... nom nom nom
-// const Joi = require('joi');
-// const { burritoValidateSchema } = require('./schemas.js');
-// const { reviewValidateSchema } = require('./schemas.js');
-// const catchAsync = require('./utilities/catchAsync');
-// const Burrito = require('./models/burrito');
-// const Review = require('./models/review');
+const PORT = process.env.PORT;
 
 // Requiring the route files
 const burritosRoutes = require('./routes/burritos');
@@ -79,29 +74,6 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// These have also been moved to other files where they are applicable.  Leaving here to just show the wayyy
-
-// Validation Errors
-// const validateBurrito = (req, res, next) => {
-//     const { error } = burritoValidateSchema.validate(req.body);
-//     if(error){
-//         const msg = error.details.map(el => el.message).join(',');
-//         throw new ExpressError(msg, 400);
-//     } else {
-//         next();
-//     };
-// };
-
-// const validateReview = (req, res, next) => {
-//     const { error } = reviewValidateSchema.validate(req.body);
-//     if(error){
-//         const msg = error.details.map(el => el.message).join(',');
-//         throw new ExpressError(msg, 400);
-//     } else {
-//         next();
-//     };
-// };
-
 app.use((req, res, next) => {
     console.log(req.session)
     res.locals.currentUser = req.user;
@@ -116,13 +88,6 @@ app.use('/burritos/:id/reviews', reviewsRoutes);
 app.use('/', userRoutes);
 
 // ROUTES
-app.get('/fakeUser', async (req, res) => {
-    const user = new User({email: 'test@gmail.com', username: 'test'});
-    //The below registers the user in arg1 and the password in arg2
-    const newUser = await User.register(user, 'abc123');
-    res.send(newUser)
-});
-
 app.get('/', (req, res) => {
     res.render('home');
 });

@@ -12,9 +12,12 @@ module.exports.renderNewForm = (req, res) => {
 module.exports.createBurrito = async (req, res, next) => {
     // Rudimentary logic to detect if the body contains burrito at all
     // if(!req.body.burrito) throw new ExpressError('Invalid Burrito Data', 400);
+    
     const burrito = new Burrito(req.body.burrito);
+    burrito.image = req.files.map(f => ({ url: f.path, filename: f.filename }));
     burrito.author = req.user._id;
     await burrito.save();
+    console.log(burrito)
     req.flash('success', 'Successfully made a new burrito!');
     res.redirect(`burritos/${burrito._id}`);
 };

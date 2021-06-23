@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' })
+const { storage } = require('../cloudinary');
+const upload = multer({ storage })
 // Load controller for burritos
 const burritos = require('../controllers/burritos')
 // Load utilities
@@ -13,11 +14,7 @@ const { isLoggedIn, isAuthor, validateBurrito } = require('../middleware')
 
 router.route('/')
     .get(catchAsync(burritos.index))
-    // .post(isLoggedIn, validateBurrito, catchAsync(burritos.createBurrito));
-    .post(upload.single('image'),(req,res)=>{
-        console.log(req.body, req.file);
-        res.send('it worked!')
-    })
+    .post(isLoggedIn, upload.array('image'), validateBurrito, catchAsync(burritos.createBurrito));
 
 router.get('/new', isLoggedIn, burritos.renderNewForm);
 
